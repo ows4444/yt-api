@@ -30,7 +30,10 @@ async function getList() {
     Youtube.search.list(
       {
         part: 'snippet',
-        relatedToVideoId: 'Ks-_Mh1QhMc',
+        eventType: 'live',
+        order: 'date',
+        q: 'news Pakistan',
+        maxResults: 50,
         type: 'video'
       },
       (_err, _data) => {
