@@ -13,38 +13,28 @@ admin.initializeApp();
 const User = require('./User');
 const Category = require('./Category');
 const Channel = require('./Youtube/Channel');
+const Video = require('./Youtube/Video');
 const api = express();
 api.use(cors({ origin: true }));
 
-api.post('/add_category', async (req, res) => {
+api.post('/add_category', (req, res) => {
   User.isAdmin(req.body.token)
-    .then(async () => {
-      Category.Create(req.body.CategoryName)
-        .then(() => {
-          res.json({ status: true, message: 'Created' });
-        })
-        .catch(e => {
-          console.log(e);
-          res.json({ status: false, message: e });
-        });
-    })
-    .catch(e => {
-      console.log(e);
-      res.json({ status: false, message: e });
-    });
+    .then(() => Category.Create(req.body.CategoryName))
+    .then(() => res.json({ status: true, message: 'Created' }))
+    .catch(e => res.json({ status: false, message: e }));
 });
 
 api.post('/get_channel_by_id', (req, res) => {
-  Channel.GetById('UCMoIpmr5X5PvcjP2kuuiXSw')
-    .then(d => {
-      res.json(d);
-    })
-    .catch(e => {
-      console.log(e);
-      console.log('e');
-    });
+  Channel.GetById(req.body.ChannelId)
+    .then(data => res.json({ status: true, data }))
+    .catch(message => res.json({ status: false, message }));
 });
-
+api.post('/get_channel_by_video_id', (req, res) => {
+  Video.GetChannelById(req.body.VideoId)
+    .then(ChannelId => Channel.GetById(ChannelId))
+    .then(data => res.json({ status: true, data }))
+    .catch(message => res.json({ status: false, message }));
+});
 function notFound(req, res, next) {
   res.status(404);
   const error = new Error('Not Found');
